@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
+
+</head>
+<body>
+  <div id="app">
+    <h2>Login</h2>
+    <form  @submit.prevent="login">
+      <input type="text" name="email" id="email" placeholder="email" v-model="email">
+      <input type="text" name="password" id="password" placeholder="password" v-model="password">
+      <button type="submit">Login</button>
+    </form>
+    <br>
+    <h2>Login</h2>
+    <form  @submit.prevent="verifty">
+      <input type="text" name="email" id="email" placeholder="email" v-model="email">
+      <input type="text" name="password" id="password" placeholder="password" v-model="password">
+      <button type="submit">Verifty</button>
+    </form>
+    <br>
+  </div>
+  <script>
+    axios.defaults.baseURL = 'http://127.0.0.1:3000';
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+    new Vue({
+      el:'#app',
+      data(){
+        return{
+          email:'',
+          password:'',
+          user:{}
+        }
+      },
+      methods:{
+        async load(){
+          const response = await axios.post('user/login');
+          console.log(response);
+          localStorage.setItem('token', response.data.token)
+        },
+        async login(){
+          const response = await axios.post('user/login');
+          console.log(response);
+          localStorage.setItem('token', response.data.token);
+          document.cookie = "name=arron"
+          console.log('cookie',document.cookie);
+          document.cookie = "username=John Doe; expires=Thu, 18 Dec 2013 12:00:00 UTC; path=/ secure";
+        },
+        async verifty(){
+
+          let data = {
+            email : this.email,
+            password : this.password
+          }
+
+          const response = await axios.post('user/decode',data);
+        }
+      },
+      async created(){
+        let response = await axios.post('user/load');
+        this.user = response
+        console.log(document.cookie);
+      }
+    })      
+  </script>
+</body>
+</html>
